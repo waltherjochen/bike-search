@@ -37,3 +37,8 @@ export interface BikeSearchParams {
   distance?: string;
   stolenness?: string;
 }
+
+export interface BikeStateModel {
+  bikes: Bike[];
+  selectedBike: Bike | null;
+}

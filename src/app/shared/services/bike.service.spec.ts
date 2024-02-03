@@ -7,7 +7,7 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {asyncData, asyncError} from '../utils/async-observable-helpers';
 import {BikeSearchParams} from '../models/bike';
 
-describe('BikeServiceService', () => {
+describe('BikeService', () => {
   let service: BikeService;
   let httpClientSpy: jasmine.SpyObj<HttpClient>;
 
@@ -31,8 +31,8 @@ describe('BikeServiceService', () => {
     httpClientSpy.get.and.returnValue(asyncData(mockBikes));
 
     service.search(searchParams).subscribe({
-      next: (bike) => {
-        expect(bike).toEqual(mockBikes);
+      next: (bikes) => {
+        expect(bikes).toEqual(mockBikes);
         done();
       },
       error: done.fail,
