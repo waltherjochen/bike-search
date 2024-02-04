@@ -8,6 +8,7 @@ import {environment} from '../environments/environment';
 import {NgxsModule} from '@ngxs/store';
 import {NgxsStoragePluginModule} from '@ngxs/storage-plugin';
 import {BikeState} from './state/bike/bike.state';
+import {provideHttpClient} from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,5 +17,8 @@ export const appConfig: ApplicationConfig = {
       NgxsModule.forRoot([BikeState]),
       NgxsStoragePluginModule.forRoot({key: ['bike']})
     ),
-    provideRouter(routes), provideAnimations()]
+    provideRouter(routes),
+    provideHttpClient(),
+    provideAnimations()
+  ]
 };

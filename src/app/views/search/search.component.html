@@ -1,1 +1,70 @@
-<p>search works!</p>
+<div class="container m-auto mt-40">
+    <div class="max-w-5xl m-auto">
+        <h1>Search For Bikes</h1>
+        <form [formGroup]="formGroup" class="w-full" (ngSubmit)="onSubmit()">
+            <mat-form-field class="w-full">
+                <mat-icon matPrefix>search</mat-icon>
+                <mat-label>Search</mat-label>
+                <input #searchRef class="w-full" type="text" matInput formControlName="search">
+            </mat-form-field>
+        </form>
+
+        <div *ngIf="!isLoading && searchResult && searchResult.bikes.length > 0">
+            <table mat-table [dataSource]="dataSource">
+                <ng-container matColumnDef="image">
+                    <td mat-cell *matCellDef="let bike">
+                        <div class="w-52 h-52">
+                            <img *ngIf="bike.thumb" class="max-h-52 m-auto min-w-30" [src]="bike.thumb"
+                                 [alt]="bike.title">
+                            <img *ngIf="!bike.thumb" class="max-h-52 m-auto min-w-30 bg-gray-200" src="https://bikeindex.org/assets/revised/bike_photo_placeholder-ff15adbd9bf89e10bf3cd2cd6c4e85e5d1056e50463ae722822493624db72e56.svg"
+                                 [alt]="bike.title">
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="details">
+                    <td mat-cell *matCellDef="let bike" class="align-top !p-4">
+                        <h3>{{ bike.title }}</h3>
+                        <ul class="grid grid-rows-2 grid-flow-col gap-1">
+                            <li>
+                                <div><strong>Serial:</strong> {{ bike.serial }}</div>
+                            </li>
+                            <li>
+                                <div><strong>Color:</strong> {{ bike.frame_colors }}</div>
+                            </li>
+                            <li>
+                                <div><strong>Status:</strong> {{ bike.status }}</div>
+                            </li>
+                            <li>
+                                <div><strong>Stolen Location:</strong> {{ bike.stolen_location }}</div>
+                            </li>
+                        </ul>
+                    </td>
+                </ng-container>
+
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+                    class="cursor-pointer hover:bg-gray-100 p-2"
+                    [routerLink]="'/bike/' + row.id"
+                ></tr>
+            </table>
+
+            <mat-paginator [pageSizeOptions]="[5, 10, 20]"
+                           (page)="handlePageEvent($event)"
+                           [pageSize]="parseInt(searchParams.per_page, 10)"
+                           [pageIndex]="parseInt(searchParams.page, 10) - 1"
+                           [length]="searchResult.total"
+                           [showFirstLastButtons]="false"
+                           showFirstLastButtons
+                           aria-label="Select page of periodic bikes">
+            </mat-paginator>
+        </div>
+
+        <div *ngIf="isLoading" class="mt-32 flex justify-center">
+            <mat-spinner></mat-spinner>
+        </div>
+
+        <div *ngIf="!isLoading && searchResult?.total === 0" class="mt-32 flex justify-center">
+            No results found.
+        </div>
+    </div>
+</div>

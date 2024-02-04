@@ -38,7 +38,19 @@ export interface BikeSearchParams {
   stolenness?: string;
 }
 
-export interface BikeStateModel {
+export interface SearchResult {
   bikes: Bike[];
+  total: number;
+}
+
+export interface BikeStateModel {
+  search: BikeSearchParams;
+  searchResult: SearchResult | null;
   selectedBike: Bike | null;
+}
+
+export interface BikeSearchResponse {
+  proximity: number;
+  stolen: number;
+  non: number;
 }

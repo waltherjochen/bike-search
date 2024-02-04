@@ -9,5 +9,9 @@ export const routes: Routes = [
   {
     path: 'search',
     loadComponent: () => import('./views/search/search.component').then(c => c.SearchComponent)
+  },
+  {
+    path: 'bike/:id',
+    loadComponent: () => import('./views/bike/bike.component').then(c => c.BikeComponent)
   }
 ];
