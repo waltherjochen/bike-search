@@ -44,7 +44,7 @@
 
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"
                     class="cursor-pointer hover:bg-gray-100 p-2"
-                    [routerLink]="'/bike/' + row.id"
+                    (click)="selectBike(row)"
                 ></tr>
             </table>
 
@@ -63,7 +63,7 @@
             <mat-spinner></mat-spinner>
         </div>
 
-        <div *ngIf="!isLoading && searchResult?.total === 0" class="mt-32 flex justify-center">
+        <div *ngIf="!isLoading && searchResult && searchResult.bikes.length === 0" class="mt-32 flex justify-center">
             No results found.
         </div>
     </div>

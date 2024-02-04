@@ -31,8 +31,8 @@ describe('BikeService', () => {
     httpClientSpy.get.and.returnValue(asyncData(mockBikes));
 
     service.search(searchParams).subscribe({
-      next: (bikes) => {
-        expect(bikes).toEqual(mockBikes);
+      next: (bikesResponse) => {
+        expect(bikesResponse.bikes).toEqual(mockBikes);
         done();
       },
       error: done.fail,
@@ -46,8 +46,8 @@ describe('BikeService', () => {
     httpClientSpy.get.and.returnValue(asyncData(expectedBike));
 
     service.getById(expectedBike.id.toString()).subscribe({
-      next: (bike) => {
-        expect(bike).toEqual(expectedBike);
+      next: (bikeResponse) => {
+        expect(bikeResponse.bike).toEqual(expectedBike);
         done();
       },
       error: done.fail,

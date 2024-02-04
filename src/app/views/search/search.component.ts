@@ -4,7 +4,7 @@ import {BikeState} from '../../state/bike/bike.state';
 import {Observable, take} from 'rxjs';
 import {Bike, BikeSearchParams, SearchResult} from '../../shared/models/bike';
 import {CommonModule} from '@angular/common';
-import {AddBikeSearchParam, SearchBikes} from '../../state/bike/bike.actions';
+import {AddBikeSearchParam, SearchBikes, SelectBike} from '../../state/bike/bike.actions';
 import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatIconModule} from '@angular/material/icon';
 import {MatInputModule} from '@angular/material/input';
@@ -131,5 +131,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.isLoading = true;
     this.updateUrlParams();
     this.store.dispatch([new AddBikeSearchParam(this.searchParams), new SearchBikes()]);
+  }
+
+  selectBike(bike: Bike) {
+    this.store.dispatch(new SelectBike(bike.id.toString())).subscribe(() => {
+      this.router.navigate(['bike', bike.id]);
+    });
   }
 }

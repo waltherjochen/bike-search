@@ -17,6 +17,6 @@ export class SearchBikes {
 export class SelectBike {
   static readonly type = '[Bike] Select';
 
-  constructor(public payload: string) {
+  constructor(public id: string) {
   }
 }

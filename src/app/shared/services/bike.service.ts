@@ -22,7 +22,7 @@ export class BikeService {
     return this.http.get<BikeSearchResponse>(`${this.baseUrl}/search/count?${new URLSearchParams({...params}).toString()}`);
   }
 
-  getById(id: string): Observable<Bike> {
-    return this.http.get<Bike>(`${this.baseUrl}/bikes/${id}`);
+  getById(id: string): Observable<{ bike: Bike }> {
+    return this.http.get<{bike: Bike}>(`${this.baseUrl}/bikes/${id}`);
   }
 }

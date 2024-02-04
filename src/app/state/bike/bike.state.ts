@@ -67,13 +67,21 @@ export class BikeState {
   }
 
   @Action(SelectBike)
-  selectBike({getState, setState}: StateContext<BikeStateModel>, {payload}: SelectBike) {
-    return this.bikeService.getById(payload)
-      .pipe(tap((selectedBike) => {
+  selectBike({getState, setState}: StateContext<BikeStateModel>, {id}: SelectBike) {
+    const state = getState();
+    if (state.selectedBike && state.selectedBike.id.toString() === id) {
+      return;
+    }
+    setState({
+      ...state,
+      selectedBike: null,
+    });
+    return this.bikeService.getById(id)
+      .pipe(tap((selectedBikeResponse) => {
         const state = getState();
         setState({
           ...state,
-          selectedBike,
+          selectedBike: selectedBikeResponse.bike,
         });
       }));
   }
