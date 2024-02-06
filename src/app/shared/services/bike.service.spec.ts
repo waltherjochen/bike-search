@@ -28,7 +28,7 @@ describe('BikeService', () => {
       page: '1',
       per_page: '10'
     }
-    httpClientSpy.get.and.returnValue(asyncData(mockBikes));
+    httpClientSpy.get.and.returnValue(asyncData({bikes: mockBikes}));
 
     service.search(searchParams).subscribe({
       next: (bikesResponse) => {
@@ -43,7 +43,7 @@ describe('BikeService', () => {
 
   it('should return Bike by id', (done: DoneFn) => {
     const expectedBike = mockBikes[0];
-    httpClientSpy.get.and.returnValue(asyncData(expectedBike));
+    httpClientSpy.get.and.returnValue(asyncData({bike: expectedBike}));
 
     service.getById(expectedBike.id.toString()).subscribe({
       next: (bikeResponse) => {
