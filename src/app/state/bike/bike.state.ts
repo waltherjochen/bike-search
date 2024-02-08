@@ -12,6 +12,7 @@ import {AddBikeSearchParam, SearchBikes, SelectBike} from './bike.actions';
     search: {
       page: '1',
       per_page: '10',
+      stolenness: 'proximity',
     },
     searchResult: null,
     selectedBike: null
@@ -60,7 +61,7 @@ export class BikeState {
         ...state,
         searchResult: {
           bikes: searchResponse.bikes,
-          total: countResponse.stolen,
+          total: countResponse.proximity,
         },
       });
     });

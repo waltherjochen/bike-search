@@ -58,7 +58,7 @@ describe('SearchComponent', () => {
 
   it('should dispatch SearchBikes action on form submit', () => {
     spyOn(store, 'dispatch');
-    component.formGroup.controls['search'].setValue('test query');
+    component.formGroup.controls['search'].setValue('test location');
     component.onSubmit();
     expect(store.dispatch).toHaveBeenCalledWith([
       jasmine.any(AddBikeSearchParam),
@@ -119,7 +119,7 @@ describe('SearchComponent', () => {
 
     component.searchParams.page = '1';
     component.searchParams.per_page = '10';
-    component.searchParams.query = '';
+    component.searchParams.location = '';
     component.formGroup.controls['search'].setValue('new search');
     component.onSubmit();
     tick();

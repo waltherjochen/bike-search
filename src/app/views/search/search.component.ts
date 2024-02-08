@@ -82,7 +82,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.search$.subscribe({
       next: (searchParams) => {
         this.searchParams = searchParams;
-        this.formGroup.controls['search'].setValue(searchParams.query);
+        this.formGroup.controls['search'].setValue(searchParams.location);
         this.dataSource.paginator = this.paginator;
         this.updateUrlParams();
       },
@@ -101,7 +101,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    this.searchParams.query = this.formGroup.value.search;
+    this.searchParams.location = this.formGroup.value.search;
     this.dispatchBikeSearch();
   }
 
@@ -116,9 +116,9 @@ export class SearchComponent implements OnInit, AfterViewInit {
       .pipe(take(1))
       .subscribe((params) => {
         let localParams = {...this.searchParams};
-        if (params['query']) {
-          localParams.query = params['query'];
-          this.formGroup.controls['search'].setValue(params['query']);
+        if (params['location']) {
+          localParams.location = params['location'];
+          this.formGroup.controls['search'].setValue(params['location']);
         }
         localParams.page = params['page'] ?? localParams.page;
         localParams.per_page = params['per_page'] ?? localParams.per_page;
@@ -131,7 +131,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   private updateUrlParams(): void {
-    if (this.searchParams.query) {
+    if (this.searchParams.location) {
       this.router.navigate([], {
         relativeTo: this.route,
         queryParams: this.searchParams,

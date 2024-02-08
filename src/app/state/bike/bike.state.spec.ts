@@ -35,8 +35,8 @@ describe('BikeState', () => {
   it('should update search result', async () => {
     const fakeSearchResult = {bikes: mockBikes, total: 4};
     const fakeSearchCountResponse: BikeSearchResponse = {
-      proximity: 0,
-      stolen: 4,
+      proximity: 4,
+      stolen: 0,
       non: 0
     }
     spyOn(bikeService, 'search').and.returnValue(of(fakeSearchResult));
