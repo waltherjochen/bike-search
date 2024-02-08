@@ -26,7 +26,7 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
   styles: ``
 })
 export class BikeComponent implements OnInit {
-  @Select(BikeState.selectedBike) selectedBike$!: Observable<Bike>;
+  @Select(BikeState.selectedBike) selectedBike$!: Observable<Bike | null>;
 
   public isLoading = true;
 
@@ -38,18 +38,21 @@ export class BikeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selectedBike$
-      .pipe(take(1))
-      .subscribe((bike) => {
-        this.isLoading = false;
-        const id = this.route.snapshot.paramMap.get('id');
-        if (id && (!bike || bike.id.toString() !== id)) {
-          this.store.dispatch(new SelectBike(id));
-        }
-      });
+    this.selectedBike$.pipe(take(1)).subscribe((bike) => {
+      this.isLoading = false;
+      const id = this.route.snapshot.paramMap.get('id');
+
+      if (!this.doesRouteIdMatchSelectedBikeId(bike, id)) {
+        this.store.dispatch(new SelectBike(id!));
+      }
+    });
   }
 
   public goBack(): void {
     this.location.back();
+  }
+
+  private doesRouteIdMatchSelectedBikeId(bike: Bike | null, id: string | null): boolean {
+    return !!id && !!bike && bike.id.toString() === id;
   }
 }
