@@ -1,27 +1,29 @@
-<div class="container max-w-5xl m-auto mt-20">
+<div class="container max-w-5xl m-auto lg:mt-20 p-2">
   <div *ngIf="selectedBike$ | async as bike">
-    <div><button (click)="goBack()" mat-button>
-      <mat-icon>arrow_back</mat-icon>
-      Back
-    </button></div>
-    <h1>{{ bike.title }} Details</h1>
-    <div><strong>ID:</strong> {{ bike.id }}</div>
-    <div><strong>Title:</strong> {{ bike.title }}</div>
-    <div><strong>Status:</strong> {{ bike.status }}</div>
-    <div><strong>Date Stolen:</strong> {{ bike.date_stolen | date:'medium' }}</div>
-    <div><strong>Description:</strong> {{ bike.description || 'N/A' }}</div>
-    <div><strong>Frame Model:</strong> {{ bike.frame_model }}</div>
-    <div *ngIf="bike.frame_colors"><strong>Frame Colors:</strong> {{ bike.frame_colors.join(', ') }}</div>
-    <div><strong>Manufacturer:</strong> {{ bike.manufacturer_name }}</div>
-    <div><strong>Serial:</strong> {{ bike.serial }}</div>
-    <div><strong>Stolen Location:</strong> {{ bike.stolen_location }}</div>
-    <div *ngIf="bike.stolen_coordinates"><strong>Stolen Coordinates:</strong> {{ bike.stolen_coordinates.join(', ') }}</div>
-    <div><strong>Propulsion Type:</strong> {{ bike.propulsion_type_slug }}</div>
-    <div><strong>Cycle Type:</strong> {{ bike.cycle_type_slug }}</div>
-    <div><strong>URL:</strong> <a href="{{ bike.url }}" target="_blank">{{ bike.url }}</a></div>
-    <div *ngIf="bike.large_img">
-      <strong>Image:</strong>
-      <img [src]="bike.large_img" alt="{{ bike.title }}" />
+    <div *ngIf="bike">
+      <div><button (click)="goBack()" mat-button>
+        <mat-icon>arrow_back</mat-icon>
+        Back
+      </button></div>
+      <h1>{{ bike.title }} Details</h1>
+      <div><strong>ID:</strong> {{ bike.id }}</div>
+      <div><strong>Title:</strong> {{ bike.title }}</div>
+      <div><strong>Status:</strong> {{ bike.status }}</div>
+      <div><strong>Date Stolen:</strong> {{ bike.date_stolen | date:'medium' }}</div>
+      <div><strong>Description:</strong> {{ bike.description || 'N/A' }}</div>
+      <div><strong>Frame Model:</strong> {{ bike.frame_model }}</div>
+      <div *ngIf="bike.frame_colors"><strong>Frame Colors:</strong> {{ bike.frame_colors.join(', ') }}</div>
+      <div><strong>Manufacturer:</strong> {{ bike.manufacturer_name }}</div>
+      <div><strong>Serial:</strong> {{ bike.serial }}</div>
+      <div><strong>Stolen Location:</strong> {{ bike.stolen_location }}</div>
+      <div *ngIf="bike.stolen_coordinates"><strong>Stolen Coordinates:</strong> {{ bike.stolen_coordinates.join(', ') }}</div>
+      <div><strong>Propulsion Type:</strong> {{ bike.propulsion_type_slug }}</div>
+      <div><strong>Cycle Type:</strong> {{ bike.cycle_type_slug }}</div>
+      <div><strong>URL:</strong> <a href="{{ bike.url }}" target="_blank">{{ bike.url }}</a></div>
+      <div *ngIf="bike.large_img">
+        <strong>Image:</strong>
+        <img [src]="bike.large_img" alt="{{ bike.title }}" />
+      </div>
     </div>
   </div>
 
