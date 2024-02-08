@@ -2,8 +2,9 @@ import {Injectable} from '@angular/core';
 import {Action, Selector, State, StateContext} from '@ngxs/store';
 import {BikeStateModel} from '../../shared/models/bike';
 import {BikeService} from '../../shared/services/bike.service';
-import {combineLatest, tap} from 'rxjs';
+import {combineLatest} from 'rxjs';
 import {AddBikeSearchParam, SearchBikes, SelectBike} from './bike.actions';
+import {HttpErrorResponse} from '@angular/common/http';
 
 
 @State<BikeStateModel>({
@@ -16,7 +17,8 @@ import {AddBikeSearchParam, SearchBikes, SelectBike} from './bike.actions';
     },
     searchResult: null,
     isSearchResultError: null,
-    selectedBike: null
+    selectedBike: null,
+    isSelectBikeErrorCode: null,
   }
 })
 
@@ -44,6 +46,11 @@ export class BikeState {
   @Selector()
   static selectedBike(state: BikeStateModel) {
     return state.selectedBike;
+  }
+
+  @Selector()
+  static isSelectBikeErrorCode(state: BikeStateModel) {
+    return state.isSelectBikeErrorCode;
   }
 
   @Action(AddBikeSearchParam)
@@ -97,12 +104,21 @@ export class BikeState {
       selectedBike: null,
     });
     return this.bikeService.getById(id)
-      .pipe(tap((selectedBikeResponse) => {
-        const state = getState();
-        setState({
-          ...state,
-          selectedBike: selectedBikeResponse.bike,
-        });
-      }));
+      .subscribe({
+        next: (selectedBikeResponse) => {
+          const state = getState();
+          setState({
+            ...state,
+            selectedBike: selectedBikeResponse.bike,
+          });
+        },
+        error: (err: HttpErrorResponse) => {
+          const state = getState();
+          setState({
+            ...state,
+            isSelectBikeErrorCode: err.status,
+          });
+        }
+      });
   }
 }

@@ -1,7 +1,7 @@
 import {Component, OnInit} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {BikeState} from '../../state/bike/bike.state';
-import {Observable, take} from 'rxjs';
+import {Observable} from 'rxjs';
 import {Bike} from '../../shared/models/bike';
 import {AsyncPipe, DatePipe, JsonPipe, Location, NgIf} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
@@ -27,8 +27,10 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 })
 export class BikeComponent implements OnInit {
   @Select(BikeState.selectedBike) selectedBike$!: Observable<Bike | null>;
+  @Select(BikeState.isSelectBikeErrorCode) isSelectBikeErrorCode$!: Observable<number | null>;
 
   public isLoading = true;
+  public isSelectBikeErrorCode: number | null = null;
 
   constructor(
     private location: Location,
@@ -38,12 +40,20 @@ export class BikeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selectedBike$.pipe(take(1)).subscribe((bike) => {
-      this.isLoading = false;
+    this.selectedBike$.subscribe((bike) => {
       const id = this.route.snapshot.paramMap.get('id');
 
       if (!this.doesRouteIdMatchSelectedBikeId(bike, id)) {
         this.store.dispatch(new SelectBike(id!));
+      } else {
+        this.isLoading = false;
+      }
+    });
+
+    this.isSelectBikeErrorCode$.subscribe((isSelectBikeError) => {
+      this.isSelectBikeErrorCode = isSelectBikeError;
+      if (this.isSelectBikeErrorCode) {
+        this.isLoading = false;
       }
     });
   }

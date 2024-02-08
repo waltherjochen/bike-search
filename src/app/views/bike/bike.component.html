@@ -31,7 +31,11 @@
     <mat-spinner></mat-spinner>
   </div>
 
-  <div *ngIf="!isLoading && !(selectedBike$ | async)" class="mt-32 flex justify-center">
+  <div *ngIf="!isLoading && !(selectedBike$ | async) && isSelectBikeErrorCode === 404" class="mt-32 flex justify-center">
     404 Bike not found.
+  </div>
+
+  <div *ngIf="isSelectBikeErrorCode && isSelectBikeErrorCode !== 404" class="error-message mt-32 flex justify-center">
+    Error fetching bike. Please try again later.
   </div>
 </div>
