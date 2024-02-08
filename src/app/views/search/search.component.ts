@@ -51,6 +51,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
   public displayedColumns: string[] = ['image', 'details'];
   public dataSource = new MatTableDataSource<Bike>([]);
   public isLoading = false;
+  public isSearchResultError = false;
+  public isSearchParamsError = false;
 
   constructor(
     private store: Store,
@@ -64,18 +66,29 @@ export class SearchComponent implements OnInit, AfterViewInit {
       search: new FormControl(''),
     });
 
-    this.searchResult$.subscribe((searchResult) => {
-      this.isLoading = false;
-      this.searchResult = searchResult;
-      this.dataSource = new MatTableDataSource<Bike>(this.searchResult?.bikes || []);
-      this.dataSource.paginator = this.paginator;
+    this.searchResult$.subscribe({
+      next: (searchResult) => {
+        this.isLoading = false;
+        this.searchResult = searchResult;
+        this.dataSource = new MatTableDataSource<Bike>(this.searchResult?.bikes || []);
+        this.dataSource.paginator = this.paginator;
+      },
+      error: () => {
+        this.isLoading = false;
+        this.isSearchResultError = true;
+      }
     });
 
-    this.search$.subscribe((searchParams) => {
-      this.searchParams = searchParams;
-      this.formGroup.controls['search'].setValue(searchParams.query);
-      this.dataSource.paginator = this.paginator;
-      this.updateUrlParams();
+    this.search$.subscribe({
+      next: (searchParams) => {
+        this.searchParams = searchParams;
+        this.formGroup.controls['search'].setValue(searchParams.query);
+        this.dataSource.paginator = this.paginator;
+        this.updateUrlParams();
+      },
+      error: () => {
+        this.isSearchParamsError = true;
+      }
     });
 
     this.getUrlParams();
@@ -129,6 +142,8 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   private dispatchBikeSearch(): void {
     this.isLoading = true;
+    this.isSearchResultError = false;
+    this.isSearchParamsError = false;
     this.updateUrlParams();
     this.store.dispatch([new AddBikeSearchParam(this.searchParams), new SearchBikes()]);
   }
