@@ -39,6 +39,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   @ViewChild('searchRef') searchRef: ElementRef<HTMLInputElement> | undefined;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Select(BikeState.searchResult) searchResult$!: Observable<SearchResult>;
+  @Select(BikeState.isSearchResultError) isSearchResultError$!: Observable<boolean | null>;
   @Select(BikeState.search) search$!: Observable<BikeSearchParams>;
   protected readonly parseInt = parseInt;
 
@@ -120,6 +121,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
       error: () => {
         this.isSearchParamsError = true;
       }
+    });
+
+    this.isSearchResultError$.subscribe((isSearchResultError) => {
+      this.isLoading = false;
+      this.isSearchResultError = !!isSearchResultError;
     });
   }
 

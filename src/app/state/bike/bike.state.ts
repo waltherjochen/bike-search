@@ -15,6 +15,7 @@ import {AddBikeSearchParam, SearchBikes, SelectBike} from './bike.actions';
       stolenness: 'proximity',
     },
     searchResult: null,
+    isSearchResultError: null,
     selectedBike: null
   }
 })
@@ -36,6 +37,11 @@ export class BikeState {
   }
 
   @Selector()
+  static isSearchResultError(state: BikeStateModel) {
+    return state.isSearchResultError;
+  }
+
+  @Selector()
   static selectedBike(state: BikeStateModel) {
     return state.selectedBike;
   }
@@ -52,19 +58,32 @@ export class BikeState {
   @Action(SearchBikes)
   searchBikes({getState, setState}: StateContext<BikeStateModel>) {
     const state = getState();
+    setState({
+      ...state,
+      isSearchResultError: false,
+    });
     combineLatest([
       this.bikeService.search(state.search),
       this.bikeService.searchCount(state.search)
-    ]).subscribe(([searchResponse, countResponse]) => {
-      const state = getState();
-      setState({
-        ...state,
-        searchResult: {
-          bikes: searchResponse.bikes,
-          total: countResponse.proximity,
-        },
-      });
-    });
+    ]).subscribe({
+      next: ([searchResponse, countResponse]) => {
+        const state = getState();
+        setState({
+          ...state,
+          searchResult: {
+            bikes: searchResponse.bikes,
+            total: countResponse.proximity,
+          },
+        });
+      },
+      error: () => {
+        const state = getState();
+        setState({
+          ...state,
+          isSearchResultError: true,
+        });
+      }
+    })
   }
 
   @Action(SelectBike)

@@ -46,6 +46,7 @@ export interface SearchResult {
 export interface BikeStateModel {
   search: BikeSearchParams;
   searchResult: SearchResult | null;
+  isSearchResultError: boolean | null;
   selectedBike: Bike | null;
 }
 
