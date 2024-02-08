@@ -62,10 +62,41 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.initFormGroup();
+    this.subscribeToBikeState();
+    this.getUrlParams();
+  }
+
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      this.searchRef?.nativeElement.focus();
+    });
+  }
+
+  public onSubmit(): void {
+    this.searchParams.location = this.formGroup.value.search;
+    this.dispatchBikeSearch();
+  }
+
+  public handlePageEvent($event: PageEvent): void {
+    this.searchParams.page = ($event.pageIndex + 1).toString();
+    this.searchParams.per_page = $event.pageSize.toString();
+    this.dispatchBikeSearch();
+  }
+
+  public selectBike(bike: Bike): void {
+    this.store.dispatch(new SelectBike(bike.id.toString())).subscribe(() => {
+      this.router.navigate(['bike', bike.id]);
+    });
+  }
+
+  private initFormGroup() {
     this.formGroup = new FormGroup({
       search: new FormControl(''),
     });
+  }
 
+  private subscribeToBikeState() {
     this.searchResult$.subscribe({
       next: (searchResult) => {
         this.isLoading = false;
@@ -90,25 +121,6 @@ export class SearchComponent implements OnInit, AfterViewInit {
         this.isSearchParamsError = true;
       }
     });
-
-    this.getUrlParams();
-  }
-
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      this.searchRef?.nativeElement.focus();
-    });
-  }
-
-  public onSubmit(): void {
-    this.searchParams.location = this.formGroup.value.search;
-    this.dispatchBikeSearch();
-  }
-
-  public handlePageEvent($event: PageEvent): void {
-    this.searchParams.page = ($event.pageIndex + 1).toString();
-    this.searchParams.per_page = $event.pageSize.toString();
-    this.dispatchBikeSearch();
   }
 
   private getUrlParams(): void {
@@ -146,11 +158,5 @@ export class SearchComponent implements OnInit, AfterViewInit {
     this.isSearchParamsError = false;
     this.updateUrlParams();
     this.store.dispatch([new AddBikeSearchParam(this.searchParams), new SearchBikes()]);
-  }
-
-  selectBike(bike: Bike) {
-    this.store.dispatch(new SelectBike(bike.id.toString())).subscribe(() => {
-      this.router.navigate(['bike', bike.id]);
-    });
   }
 }
