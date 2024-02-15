@@ -1,7 +1,7 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {BikeState} from '../../state/bike/bike.state';
-import {Observable} from 'rxjs';
+import {Observable, Subject, takeUntil} from 'rxjs';
 import {Bike} from '../../shared/models/bike';
 import {AsyncPipe, DatePipe, JsonPipe, Location, NgIf} from '@angular/common';
 import {MatButtonModule} from '@angular/material/button';
@@ -25,12 +25,13 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
   templateUrl: './bike.component.html',
   styles: ``
 })
-export class BikeComponent implements OnInit {
+export class BikeComponent implements OnInit, OnDestroy {
   @Select(BikeState.selectedBike) selectedBike$!: Observable<Bike | null>;
   @Select(BikeState.isSelectBikeErrorCode) isSelectBikeErrorCode$!: Observable<number | null>;
 
   public isLoading = true;
   public isSelectBikeErrorCode: number | null = null;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private location: Location,
@@ -40,7 +41,7 @@ export class BikeComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.selectedBike$.subscribe((bike) => {
+    this.selectedBike$.pipe(takeUntil(this.destroy$)).subscribe((bike) => {
       const id = this.route.snapshot.paramMap.get('id');
 
       if (!this.doesRouteIdMatchSelectedBikeId(bike, id)) {
@@ -50,12 +51,17 @@ export class BikeComponent implements OnInit {
       }
     });
 
-    this.isSelectBikeErrorCode$.subscribe((isSelectBikeError) => {
+    this.isSelectBikeErrorCode$.pipe(takeUntil(this.destroy$)).subscribe((isSelectBikeError) => {
       this.isSelectBikeErrorCode = isSelectBikeError;
       if (this.isSelectBikeErrorCode) {
         this.isLoading = false;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 
   public goBack(): void {

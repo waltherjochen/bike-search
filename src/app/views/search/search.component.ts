@@ -1,7 +1,7 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {Select, Store} from '@ngxs/store';
 import {BikeState} from '../../state/bike/bike.state';
-import {Observable, take} from 'rxjs';
+import {Observable, Subject, take, takeUntil} from 'rxjs';
 import {Bike, BikeSearchParams, SearchResult} from '../../shared/models/bike';
 import {CommonModule} from '@angular/common';
 import {AddBikeSearchParam, SearchBikes, SelectBike} from '../../state/bike/bike.actions';
@@ -35,12 +35,13 @@ import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
   templateUrl: './search.component.html',
   styles: ``
 })
-export class SearchComponent implements OnInit, AfterViewInit {
+export class SearchComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('searchRef') searchRef: ElementRef<HTMLInputElement> | undefined;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @Select(BikeState.searchResult) searchResult$!: Observable<SearchResult>;
   @Select(BikeState.isSearchResultError) isSearchResultError$!: Observable<boolean | null>;
   @Select(BikeState.search) search$!: Observable<BikeSearchParams>;
+  @Select(BikeState.selectedBike) selectedBike$!: Observable<Bike | null>;
   protected readonly parseInt = parseInt;
 
   public formGroup!: FormGroup;
@@ -54,6 +55,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   public isLoading = false;
   public isSearchResultError = false;
   public isSearchParamsError = false;
+  private destroy$: Subject<boolean> = new Subject<boolean>();
 
   constructor(
     private store: Store,
@@ -74,6 +76,11 @@ export class SearchComponent implements OnInit, AfterViewInit {
     });
   }
 
+  ngOnDestroy(): void {
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
+  }
+
   public onSubmit(): void {
     this.searchParams.location = this.formGroup.value.search;
     this.dispatchBikeSearch();
@@ -86,8 +93,12 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   public selectBike(bike: Bike): void {
-    this.store.dispatch(new SelectBike(bike.id.toString())).subscribe(() => {
-      this.router.navigate(['bike', bike.id]);
+    this.store.dispatch(new SelectBike(bike.id.toString()));
+
+    this.selectedBike$.pipe(takeUntil(this.destroy$)).subscribe((selectedBike) => {
+      if (selectedBike) {
+        void this.router.navigate(['bike', bike.id]);
+      }
     });
   }
 
@@ -98,7 +109,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   }
 
   private subscribeToBikeState() {
-    this.searchResult$.subscribe({
+    this.searchResult$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (searchResult) => {
         this.isLoading = false;
         this.searchResult = searchResult;
@@ -111,7 +122,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.search$.subscribe({
+    this.search$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (searchParams) => {
         this.searchParams = searchParams;
         this.formGroup.controls['search'].setValue(searchParams.location);
@@ -123,7 +134,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
       }
     });
 
-    this.isSearchResultError$.subscribe((isSearchResultError) => {
+    this.isSearchResultError$.pipe(takeUntil(this.destroy$)).subscribe((isSearchResultError) => {
       this.isLoading = false;
       this.isSearchResultError = !!isSearchResultError;
     });
@@ -132,6 +143,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
   private getUrlParams(): void {
     this.route.queryParams
       .pipe(take(1))
+      .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         let localParams = {...this.searchParams};
         if (params['location']) {
@@ -150,7 +162,7 @@ export class SearchComponent implements OnInit, AfterViewInit {
 
   private updateUrlParams(): void {
     if (this.searchParams.location) {
-      this.router.navigate([], {
+      void this.router.navigate([], {
         relativeTo: this.route,
         queryParams: this.searchParams,
         queryParamsHandling: 'merge',
