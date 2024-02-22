@@ -84,16 +84,12 @@ describe('SearchComponent', () => {
     ]);
   });
 
-  it('should navigate to bike details on selectBike', fakeAsync(() => {
-    const navigateSpy = spyOn(router, 'navigate');
+  it('update state on selectBike', () => {
     const storeDispatchSpy = spyOn(store, 'dispatch').and.returnValue(of(mockBikes[0]));
     const testBike: Bike = mockBikes[0];
     component.selectBike(testBike);
-    tick();
-
     expect(storeDispatchSpy).toHaveBeenCalledWith(jasmine.any(SelectBike));
-    expect(navigateSpy).toHaveBeenCalledWith(['bike', testBike.id]);
-  }));
+  });
 
   it('should correctly initialize paginator after view init', () => {
     component.ngAfterViewInit();
@@ -126,7 +122,7 @@ describe('SearchComponent', () => {
 
     expect(navigateSpy).toHaveBeenCalledWith([], {
       relativeTo: route,
-      queryParams: {query: 'new search', page: '1', per_page: '10'},
+      queryParams: {location: 'new search', page: '1', per_page: '10', stolenness: 'proximity'},
       queryParamsHandling: 'merge',
     });
   }));

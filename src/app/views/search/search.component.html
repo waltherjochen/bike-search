@@ -14,9 +14,9 @@
                 <ng-container matColumnDef="image">
                     <td mat-cell *matCellDef="let bike">
                         <div class="min-w-12 h-52 flex items-center">
-                            <img *ngIf="bike.thumb" class="max-h-52 m-auto min-w-30" [src]="bike.thumb"
+                            <img *ngIf="bike.thumb" class="max-h-52 m-auto min-w-32" [src]="bike.thumb"
                                  [alt]="bike.title">
-                            <img *ngIf="!bike.thumb" class="max-h-52 m-auto min-w-30 bg-gray-200"
+                            <img *ngIf="!bike.thumb" class="max-h-52 m-auto min-w-32 bg-gray-200"
                                  src="https://bikeindex.org/assets/revised/bike_photo_placeholder-ff15adbd9bf89e10bf3cd2cd6c4e85e5d1056e50463ae722822493624db72e56.svg"
                                  [alt]="bike.title">
                         </div>
